@@ -1,0 +1,254 @@
+<!--
+1.初级扫雷 v1.0版
+ --不能使用标记（不知道右键点击事件怎么写）
+ --雷数不可控 大约10个左右（最多控制上限感觉没用就注释掉了）
+ --不可自动点开周围所有的0（这个不太好遍历）试着写了下，这个是真变态，不写了
+ --不带踩雷后提示爆炸（弹窗太丑不想用）
+ --不带初始化（不想写，刷新网页就好了）
+ --踩雷后停止点击，依然不弹窗提示（弹窗真的很丑）
+ --棋盘大小也不可变，（呵呵，懒得计算每次改变后的div大小和间隙）
+ --整体来说样子很丑，我知道，毕竟我没有UI的妹纸
+ -----------------------------------------------------copy right by 一位资深的黑马学员
+
+
+
+ 7.1 update2.0
+ --1.更新了右键标记功能并取消了右键菜单，右键标记使用了我们最爱的原谅色
+ --2.新加了踩雷停止游戏功能，踩雷后再点击图标无效
+ --3.更新踩雷后显示所有的雷
+ --4.重点，更新了雷的数目可控，有玩家自己输入
+ --5.难点还是点开空开可以衍生的功能依旧没有实现，过程中各种死机，痛苦。
+
+ 7.3 update3.0
+ --增加了计数器
+ --增加胜利提示
+ --增加重置按钮
+ --经历了千辛万苦后的各种死机后终于是递归出了连环点开的效果，没了，只更新了这一个功能。
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>初级扫雷 v3.0</title>
+    <style>
+        .father {
+            width: 555px;
+            height: 555px;
+            margin: 0px auto;
+            background-color: #999;
+        }
+
+        .son {
+            width: 50px;
+            height: 50px;
+            margin-top: 5px;
+            margin-left: 5px;
+            background-color: #ccc;
+            float: left;
+            font-size: 0px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .numBanner {
+            width: 545px;
+            height: 150px;
+            margin: 100px auto 0;
+            border: 5px solid #999;
+            border-width: 5px 5px 0 5px;
+            font-size: 50px;
+            line-height: 150px;
+            text-align: center;
+            color: red;
+        }
+
+        .reset {
+            display: inline-block;
+            text-decoration: none;
+            color: #000203;
+            width: 100px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: 30px;
+            background-color: #dedede;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="javascript:location.reload()" class="reset">重置</a>
+    <!--<a href="初级扫雷 v3.0.html" class="reset">重置</a>-->
+    <script>
+        document.write("<div class='numBanner' id='numBanner'>");//画出前面的头部计数栏
+        document.write("</div>")
+        document.write("<div class='father'>");//画出棋盘一个大的div里面包含100个小div
+        for (var i = 0; i < 100; i++) {
+            document.write("<div class='son' onmousedown='boom(this)'>");
+            document.write("</div>")
+        }
+        document.write("</div>")
+        var a = document.getElementsByClassName("son");  //获得100个小div元素
+        document.oncontextmenu = function () { return false };//屏蔽右键菜单
+        var life = true;//生命条
+        var arr = [];  //arr数组为10*10的二维数组，用于存放0或者9的数字，9代表雷，0代表不是雷
+        for (var x = 0; x < 10; x++) {
+            arr[x] = new Array(10);   //定义为二维数组
+        }
+        for (var m = 0; m < 10; m++) {
+            for (var n = 0; n < 10; n++) {
+                arr[m][n] = 0;  //arr初始化全为0，默认无雷；
+            }
+        }
+        var num = +prompt("请输入雷的个数");//页面加载时手动输入雷的个数，请勿超过100，会死循环
+        var clickTimes = 100 - num;//飞雷格子的个数，后面每点击一个非雷的格子则-1，当为0的时候提示胜利
+        var numBanner = document.getElementById("numBanner");//获得计数栏元素 ，用于显示剩余雷的个数以及最后提示胜利
+        numBanner.innerHTML = num;//初始化计数栏的值为手动输入雷的个数
+        var boomNum = 1 //初始化实际赋值雷的个数（即arr数组中为9元素的个数）
+        while (boomNum <= num) //赋值雷的属性，当数组为0不是雷的时候就赋值成9为雷并计数，不然就再次赋值，直到达到要求
+        {
+            var x = Math.floor(10 * Math.random());//生成0-9的随机整数，对应二维数组arr的下标
+            var y = Math.floor(10 * Math.random());
+            if (arr[x][y] == 0) {
+                arr[x][y] = 9;
+                boomNum++;   //循环因子只有在成功赋值为9的时候才递增，而成功的条件则是随机生成的坐标对应的元素值为0，即不是已经被赋值为9的元素。
+            }
+        }
+        for (var i = 0; i < arr.length; i++)//控制雷的数组arr与小div元素数组a同为100个，将其一一对应，并将arr的值与其下标传给对应的小div的innerHTML;
+        {
+            for (var j = 0; j < arr[i].length; j++) {
+                a[i * (arr[i].length) + j].innerHTML = [arr[i][j], i, j];//9代表有雷，后面2位 i和j为二维数组的下标
+            }
+        }
+
+        var arrClick = []; //定义二维数组用于判断对应的小div元素是否被左键点击过，用于后面防止来回递归而产生死循环
+        for (var x = 0; x < 10; x++) {
+            arrClick[x] = new Array(10);   //定义二维数组
+        }
+        for (var m = 0; m < 10; m++) {
+            for (var n = 0; n < 10; n++) {
+                arrClick[m][n] = false;  //初始化全为flase；表明最初所有的div都没有被点击过
+            }
+        }
+
+        function boom(e)//点击div时触发的函数 形参e为实参this传进来的值，即为被点击的div元素本身。
+        {
+
+            if (event.button == 2 && life) //event.button==2表明被点击的为右键，0为左键，1为滚轮。
+            {
+                if (e.style.backgroundColor == "" || e.style.backgroundColor == "rgb(204, 204, 204)")//当背景色为空或者为灰色时使其变成原谅色，这是一个标记的动作
+                {
+                    e.style.backgroundColor = "rgb(0,255,0)";
+                    numBanner.innerHTML = +numBanner.innerHTML - 1;//标记1个雷，所以计数栏里显示的数字-1
+                }
+                else if (e.style.backgroundColor == "rgb(0, 255, 0)")//当背景色为原谅色时被右键点击，这是一个取消标记的动作
+                {
+                    e.style.backgroundColor = "rgb(204,204,204)";
+                    numBanner.innerHTML = +numBanner.innerHTML + 1;//取消一个雷标记，所以计数栏里的数字+1
+                }
+                else { }//这里加一个else是为了排除当点到雷后背景色会改成红色的干扰，所以什么都不做，因为点到雷猴游戏结束，不进行任何操作
+                return;//下面代码为左键事件，所以如果是点击的右键在这里返回终止函数，不执行下面左键事件的代码
+            }
+            //e.style.fontSize = "15px";//文字大小本来为0隐藏，点击后显示字体
+            var txt = e.innerHTML;//获取被点击div里的文本信息，之前的我们将0或9 还有下标信息传入到了div的文本内容里，现在抓取
+            var i, j;
+            i = +txt[2];//被点击div在对应二维数组里的下标
+            j = +txt[4];
+            //a[10*i+j] e 所在a的下标表示
+            if (txt.length == 1)//重复点击bug消除
+            {
+                return;
+            }
+            if (txt[0] == "9" && life)// txt的首字母存放的为是否为雷，为9踩雷的时候执行左键点击事件
+            {
+                for (var m = 0; m < 10; m++)//利用双重for循环遍历到所有的雷，然后使其对应的div全部引爆（背景色变红，文字改为Boom！字体大小改为15px）
+                {
+                    for (var n = 0; n < 10; n++) {
+                        if (arr[m][n] == 9) {
+                            a[10 * m + n].style.backgroundColor = "red";
+                            a[10 * m + n].innerText = "Boom!";
+                            a[10 * m + n].style.fontSize = "15px"
+                        }
+                    }
+                }
+                life = false;// 踩雷后生命值归零 游戏结束
+            }
+            else if (life)  //执行不踩雷的左键点击事件
+            {
+
+                e.style.fontSize = "15px";//字体放大，默认为0
+                e.style.backgroundColor = "white";//不是雷的块点击后变成白色
+                var flag = isBoom(i, j);//判断周围8分卫里雷的个数并返回
+                flag = flag == 0 ? "" : flag;//8分卫雷数为0时不显示内容，为空字符串
+                e.innerHTML = flag;//输出
+                clickTimes--;//未被点击的非雷元素个数-1
+                if (!flag) {
+                    aroundBoom(i, j);//当点开的元素周围8分卫没有雷的时候，执行连环引爆效果
+                }
+                if (!clickTimes)//判断当未被点击的非雷个数为0的时候提示胜利
+                {
+                    numBanner.innerHTML = "Congratulations!";
+                    life = false;//游戏结束
+                }
+            }
+            else {
+                //一样游戏结束后屏幕左键点击效果，使其无效
+            }
+        }
+
+        function isBoom(i, j)//搜索周围8个div里面雷的个数
+        {
+            arrClick[i][j] = true; //搜寻周围8个表示，表示中间的本身已被点击过
+            var flag = 0;
+            for (var m = i - 1; m <= i + 1; m++)//便利周围8个加自己本身记录雷的个数，因为本身不是雷，多循环自己不影响一次不影响计数
+            {
+                for (var n = j - 1; n <= j + 1; n++) {
+                    if (m == -1 || m == arr.length || n == -1 || n == arr[m].length)//特殊的边缘并没有8分卫，需要消除多余的
+                    {
+                        continue;
+                    }
+                    if (arr[m][n] == 9) {
+                        flag++;//记录8分卫雷的个数
+                    }
+                }
+            }
+            return flag; //返回雷的个数
+        }
+
+        function aroundBoom(i, j) {
+            arrClick[i][j] = true;//需要引爆说明本身已被点击并且周围8分卫都不为雷
+            function one(i, j) {
+                if (i == -1 || i == arr.length || j == -1 || j == arr.length) //超出范围终止函数
+                {
+                    return;
+                }
+                if (arrClick[i][j]) //已被点击不在进行引爆，以免出现来回递归的死循环
+                {
+                    return;
+                }
+                //引爆和点击非雷的左键事件效果一样，更改背景色为白色，字体大小，显示周围8分卫雷的个数
+                a[10 * i + j].style.backgroundColor = "white";
+                var flag = isBoom(i, j);
+                flag = flag == 0 ? "" : flag;
+                a[10 * i + j].innerHTML = flag;
+                a[10 * i + j].style.fontSize = "15px";
+                clickTimes--;//由于样式修改，非雷未点击数-1
+                if (!flag) {//重点！当引爆的8分卫也需要引爆时调用自己！！
+                    aroundBoom(i, j);
+                }
+            }
+            one(i - 1, j);//上
+            one(i - 1, j + 1);//右上
+            one(i, j + 1);//右
+            one(i + 1, j + 1);//右下
+            one(i + 1, j);//下
+            one(i + 1, j - 1);//左下
+            one(i, j - 1);//左
+            one(i - 1, j - 1);//左上
+        }
+    </script>
+</body>
+
+</html>

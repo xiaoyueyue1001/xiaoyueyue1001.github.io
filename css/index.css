@@ -37,6 +37,7 @@ main > ul > li {
 }
 #head > img {
   width: 50%;
+  height: 150px;
   border: 5px solid #fff;
   border-radius: 50%;
   background-color: #f20;
