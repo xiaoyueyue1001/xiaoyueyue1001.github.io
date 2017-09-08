@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        #canvas {
+            display: block;
+            /*border: 1px solid #000;*/
+            margin: 50px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="1200" height="750"></canvas>
+    <script>
+        var canvas = document.querySelector('#canvas');
+        var context = canvas.getContext('2d');
+        var gap = 30;
+        for (var i = gap; i < canvas.height; i += gap) {
+            context.beginPath();
+            context.moveTo(gap, i);
+            context.lineTo(canvas.width - gap, i);
+            context.stroke();
+        }
+        for (var i = gap; i < canvas.width; i += gap) {
+            context.beginPath();
+            context.moveTo(i, gap);
+            context.lineTo(i, canvas.height - gap);
+            context.stroke();
+        }
+        var left2L = document.body.offsetWidth > canvas.width ? (document.body.offsetWidth - canvas.width) / 2 : 0;
+        var top2T = canvas.offsetTop;
+        var colors = ['black', 'white'];
+        var index = 0;
+        var arrDown = [];
+        arrDown.length = 100;
+        for (var i = 0; i < 100; i++) {
+            arrDown[i] = new Array(100);
+            for (var j = 0; j < 100; j++) {
+                arrDown[i][j] = 0;
+            }
+        }
+        document.querySelector('#canvas').addEventListener('click', function (e) {
+            var left2L = document.body.offsetWidth > canvas.width ? (document.body.offsetWidth - canvas.width) / 2 : 0;
+            var top2T = canvas.offsetTop;
+            var x = e.pageX - left2L;
+            var y = e.pageY - top2T;
+            if (x < gap || x > canvas.width - gap || y < gap || y > canvas.height - gap) return;
+            var X = Math.round(x / gap);
+            var Y = Math.round(y / gap);
+
+            if (arrDown[X + 10][Y + 10] != 0) return;
+            context.beginPath();
+            context.arc(X * gap, Y * gap, 10, 0, 2 * Math.PI);
+            context.fillStyle = colors[index % 2];
+            context.fill();
+            index++;
+            context.strokeStyle = colors[index % 2];
+            context.stroke();
+            arrDown[X + 10][Y + 10] = index % 2 ? 1 : 10;//黑子为1 白子为10 整体偏移10个坐标
+            console.dir(arrDown);
+
+
+            //判断是否胜利
+            for (var i = X + 6; i < X + 11; i++) {
+                for (var j = Y + 6; j < Y + 15; j++) {
+                    if (arrDown[i][j] + arrDown[i][j + 1] + arrDown[i][j + 2] + arrDown[i][j + 3] + arrDown[i][j + 4] == 5) { alert('黑棋获胜'); }
+                    if (arrDown[i][j] + arrDown[i + 1][j] + arrDown[i + 2][j] + arrDown[i + 3][j] + arrDown[i + 4][j] == 5) { alert('黑棋获胜'); }
+                    if (arrDown[i][j] + arrDown[i + 1][j + 1] + arrDown[i + 2][j + 2] + arrDown[i + 3][j + 3] + arrDown[i + 4][j + 4] == 5) { alert('黑棋获胜'); }
+                    if (arrDown[i][j] + arrDown[i + 1][j - 1] + arrDown[i + 2][j - 2] + arrDown[i + 3][j - 3] + arrDown[i + 4][j - 4] == 5) { alert('黑棋获胜'); }
+                    if (arrDown[i][j] + arrDown[i][j + 1] + arrDown[i][j + 2] + arrDown[i][j + 3] + arrDown[i][j + 4] == 50) { alert('白棋获胜'); }
+                    if (arrDown[i][j] + arrDown[i + 1][j] + arrDown[i + 2][j] + arrDown[i + 3][j] + arrDown[i + 4][j] == 50) { alert('白棋获胜'); }
+                    if (arrDown[i][j] + arrDown[i + 1][j + 1] + arrDown[i + 2][j + 2] + arrDown[i + 3][j + 3] + arrDown[i + 4][j + 4] == 50) { alert('白棋获胜'); }
+                    if (arrDown[i][j] + arrDown[i + 1][j - 1] + arrDown[i + 2][j - 2] + arrDown[i + 3][j - 3] + arrDown[i + 4][j - 4] == 50) { alert('白棋获胜'); }
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
