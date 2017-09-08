@@ -4,7 +4,8 @@
         }
 
         body {
-            background-color: #000;
+            background-color: #666;
+            transition: all .5s;
         }
 
         li {
