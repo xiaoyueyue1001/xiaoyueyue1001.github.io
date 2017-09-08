@@ -1,0 +1,48 @@
+header {
+  line-height: 50px;
+  text-align: center;
+  color: #fff;
+}
+main {
+  background-color: #fff;
+}
+main > h3 {
+  text-indent: 30px;
+  line-height: 80px;
+}
+main > ul {
+  padding-left: 50px;
+  height: 1000px;
+  border: 1px solid #ccc;
+}
+main > ul > li {
+  height: 50px;
+  line-height: 50px;
+  font-size: 20px;
+  border-bottom: 1px solid #ccc;
+}
+#head {
+  position: fixed;
+  height: 100%;
+  left: 0;
+  top: 0;
+  transform: translateX(0);
+  width: 300px;
+  background-color: #fff;
+}
+#head > img {
+  width: 100%;
+}
+#head > p {
+  line-height: 20px;
+  text-align: center;
+}
+#head .slideBar {
+  position: absolute;
+  width: 30px;
+  height: 100px;
+  background-color: #f52;
+  right: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+}
