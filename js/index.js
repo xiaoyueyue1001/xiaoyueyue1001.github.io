@@ -1,5 +1,7 @@
 define(['../lib/jquery-1.12.4.min.js', '../lib/less.js'], function () {
-    // console.log('呵呵');
+
+
+    //侧栏点击的拉出与缩回
     $('#head').data('isDisplay', false);
     $('#head .slideBar').click(function () {
         if ($('#head').data('isDisplay') == false) {

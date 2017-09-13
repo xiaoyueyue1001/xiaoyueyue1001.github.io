@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html>
+
 <head lang="en">
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
     <title>flappy bird</title>
+    <style>
+        body {
+            zoom: 80%;
+        }
+    </style>
     <script src="js/Sky.js"></script>
     <script src="js/Land.js"></script>
     <script src="js/pipe.js"></script>
     <script src="js/Bird.js"></script>
 </head>
+
 <body>
     <canvas width="800" height='600' id="canvas"></canvas>
     <script>
@@ -25,62 +32,62 @@
         pipe1Image.src = 'img/pipe1.png';
         pipe2Image.src = 'img/pipe2.png';
         birdImage.src = 'img/birds.png';
-        var images = [skyImage,landImage,pipe1Image,pipe2Image];
+        var images = [skyImage, landImage, pipe1Image, pipe2Image];
         var count = 0;
         var rolesArr = [];
         var flag = false;
         images.forEach(function (image) {
             image.onload = function () {
                 count++;
-                if(count==images.length){
+                if (count == images.length) {
                     console.log('图片加载好了');
                     //创建角色并加入角色数组
                     function creatRoles() {
                         //创建天空背景
                         for (var i = 0; i < 2; i++) {
-                            var info ={
-                                canvas:canvas,
-                                context:context,
-                                image:skyImage,
-                                x:skyImage.width*i,
-                                step:0
+                            var info = {
+                                canvas: canvas,
+                                context: context,
+                                image: skyImage,
+                                x: skyImage.width * i,
+                                step: 0
                             }
                             var sky = new Sky(info);
                             rolesArr.push(sky);
                         }
                         //创建管道
-                        var gap_w = (canvas.width-pipe1Image.width*6)/5;
+                        var gap_w = (canvas.width - pipe1Image.width * 6) / 5;
                         for (var i = 0; i < 6; i++) {
-                            var info ={
-                                canvas:canvas,
-                                context:context,
-                                imageTop:pipe2Image,
-                                imageBottom:pipe1Image,
-                                gap_w:gap_w,
-                                x:(pipe1Image.width+gap_w)*i+400,
-                                step:0
+                            var info = {
+                                canvas: canvas,
+                                context: context,
+                                imageTop: pipe2Image,
+                                imageBottom: pipe1Image,
+                                gap_w: gap_w,
+                                x: (pipe1Image.width + gap_w) * i + 400,
+                                step: 0
                             }
                             var pipe = new Pipe(info);
                             rolesArr.push(pipe);
                         }
                         //创建陆地对象
                         for (var i = 0; i < 4; i++) {
-                            var info ={
-                                canvas:canvas,
-                                context:context,
-                                image:landImage,
-                                x:landImage.width*i,
-                                step:0
+                            var info = {
+                                canvas: canvas,
+                                context: context,
+                                image: landImage,
+                                x: landImage.width * i,
+                                step: 0
                             }
                             var land = new Land(info);
                             rolesArr.push(land);
                         }
                         //创建小鸟对象
                         var info = {
-                            canvas:canvas,
-                            context:context,
-                            image:birdImage,
-//                            startTime:new Date()
+                            canvas: canvas,
+                            context: context,
+                            image: birdImage,
+                            //                            startTime:new Date()
                         }
                         var bird = new Bird(info);
                         rolesArr.push(bird);
@@ -91,51 +98,51 @@
                     var times = 0;
                     function action() {
                         var safeHeight = 200;
-                        if(flag){
-                           times++;
-                           safeHeight = 400;
-                           for (var i = 0; i < rolesArr.length-1; i++) {
-                                rolesArr[i].step =-2;
-                            } 
+                        if (flag) {
+                            times++;
+                            safeHeight = 400;
+                            for (var i = 0; i < rolesArr.length - 1; i++) {
+                                rolesArr[i].step = -2;
+                            }
                         }
-                        var bird = rolesArr[rolesArr.length-1];
-                        
+                        var bird = rolesArr[rolesArr.length - 1];
+
                         context.beginPath();
-                        context.clearRect(0,0,canvas.width,canvas.height);
+                        context.clearRect(0, 0, canvas.width, canvas.height);
                         for (var i = 0; i < rolesArr.length; i++) {
                             rolesArr[i].draw();
                         }
- 
 
-                        i = Math.ceil((times-150) /rolesArr[2].gap_w); 
-                        i = i<0?0:i;
+
+                        i = Math.ceil((times - 150) / rolesArr[2].gap_w);
+                        i = i < 0 ? 0 : i;
                         context.save();
                         context.textAlign = 'right';
                         context.textBaseline = 'top';
                         context.font = '30px 宋体'
-                        context.fillText('飞过的柱子数量：'+i,canvas.width,0);
+                        context.fillText('飞过的柱子数量：' + i, canvas.width, 0);
                         context.restore();
 
 
 
-                        
-                        if(bird.y>=canvas.height-landImage.height-birdImage.height){
+
+                        if (bird.y >= canvas.height - landImage.height - birdImage.height) {
                             context.font = '100px 微软雅黑';
                             context.fillStyle = '#f50';
-                            context.fillText('default',250,300);
+                            context.fillText('default', 250, 300);
                             return;
                         }
-                        if(context.isPointInPath(bird.x+7,bird.y+10)||context.isPointInPath(bird.x+bird.w-7,bird.y+10)||context.isPointInPath(bird.x+7,bird.y+bird.h-10)||context.isPointInPath(bird.x+bird.w-7,bird.y+bird.h-10)){
+                        if (context.isPointInPath(bird.x + 7, bird.y + 10) || context.isPointInPath(bird.x + bird.w - 7, bird.y + 10) || context.isPointInPath(bird.x + 7, bird.y + bird.h - 10) || context.isPointInPath(bird.x + bird.w - 7, bird.y + bird.h - 10)) {
                             context.font = '100px 微软雅黑';
                             context.fillStyle = '#f50';
-                            context.fillText('default',250,300);
+                            context.fillText('default', 250, 300);
                             return;
                         }
-                        if(bird.y>safeHeight){
+                        if (bird.y > safeHeight) {
                             bird.speed = -6;
                         }
 
-                        
+
                         window.requestAnimationFrame(action);
                     }
                     action();
@@ -146,17 +153,17 @@
                     // function birdInit() {
                     //     context.beginPath();
                     //     rolesArr[rolesArr.length-1].draw();
-                        
+
                     //     window.requestAnimationFrame(birdInit);
                     // }
                     canvas.addEventListener('click', function () {
-                        rolesArr[rolesArr.length-1].speed = -6;
+                        rolesArr[rolesArr.length - 1].speed = -6;
                         flag = true;
                     })
                 }
             }
         })
-
     </script>
 </body>
+
 </html>
