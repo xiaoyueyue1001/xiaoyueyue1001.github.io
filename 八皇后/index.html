@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .pan {
+            width: 445px;
+            height: 445px;
+            margin: 100px auto;
+            border: 1px solid #000;
+            border-radius: 4px;
+        }
+
+        .pan div {
+            width: 50px;
+            height: 50px;
+            /* border: 1px solid #000; */
+            margin-top: 5px;
+            margin-left: 5px;
+            float: left;
+            background-color: #ccc;
+            font-size: 0;
+        }
+    </style>
+    <script src='http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js'></script>
+</head>
+
+<body>
+    <div class="pan"></div>
+</body>
+
+</html>
+<script>
+    for (var x = 0; x < 8; x++) {
+        for (var y = 0; y < 8; y++) {
+            var $div = $("<div></div>");
+            $div.attr("x", x);
+            $div.attr("y", y)
+            $(".pan").append($div);
+        }
+    }
+    var arr = [];
+    $(".pan>div").click(function () {
+        var flag = true;
+        for (var i = 0; i < arr.length; i++) {
+            if ($(this).attr("x") == arr[i][0] || $(this).attr("y") == arr[i][1] || $(this).attr("x") + $(this).attr("y") == arr[i][0] + arr[i][1] || $(this).attr("x") - $(this).attr("y") == arr[i][0] - arr[i][1]) {
+                flag = false;
+                alert("You are lost!");
+                return;
+            }
+        }
+        if (flag) {
+            arr.push([$(this).attr("x"), $(this).attr("y")]);
+            $(this).css("backgroundColor", "green");
+        }
+    })
+
+</script>
