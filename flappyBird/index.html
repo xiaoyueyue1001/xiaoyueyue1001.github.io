@@ -124,13 +124,13 @@
                         if (bird.y >= canvas.height - landImage.height - birdImage.height) {
                             context.font = '100px 微软雅黑';
                             context.fillStyle = '#f50';
-                            context.fillText('default', 250, 300);
+                            context.fillText('defeat', 250, 300);
                             return;
                         }
                         if (context.isPointInPath(bird.x + 7, bird.y + 10) || context.isPointInPath(bird.x + bird.w - 7, bird.y + 10) || context.isPointInPath(bird.x + 7, bird.y + bird.h - 10) || context.isPointInPath(bird.x + bird.w - 7, bird.y + bird.h - 10)) {
                             context.font = '100px 微软雅黑';
                             context.fillStyle = '#f50';
-                            context.fillText('default', 250, 300);
+                            context.fillText('defeat', 250, 300);
                             return;
                         }
                         if (bird.y > safeHeight) {
