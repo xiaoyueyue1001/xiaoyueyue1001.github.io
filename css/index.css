@@ -5,6 +5,7 @@ header {
 }
 main {
   background-color: #fff;
+  height: 100%;
 }
 main > h3 {
   text-indent: 30px;
