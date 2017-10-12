@@ -7,6 +7,9 @@ html {
 body {
   margin: 0;
 }
+p{
+  text-indent: 2em;
+}
 article,
 aside,
 details,
@@ -1807,7 +1810,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #f5366c;
+  background: #22c39d;
 }
 .links-of-blogroll {
   font-size: 13px;
