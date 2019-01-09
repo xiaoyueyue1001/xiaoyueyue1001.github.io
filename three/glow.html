@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>universe</title>
+    <style>
+        .show {
+            width: 1200px;
+            height: 800px;
+            border: 1px solid #ccc;
+        }
+
+        .tip{
+            width: 200px;
+            height: 50px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: none;
+            background-color: rgba(0,0,0,.3);
+        }
+    </style>
+    <script src="./lib/three.js"></script>
+    <script src="./lib/OrbitControls.js"></script>
+
+</head>
+<body>
+    <div class="show"></div>
+
+    <div class="tip">
+
+    </div>
+
+    <script>
+        let tip = document.querySelector(".tip");//tip提示框
+        let width = 1200;
+        let height = 800;
+
+        let scene,//场景
+            camera,//摄像头
+            renderer,//渲染器
+            controls,//控制器(鼠标移动视角插件)
+            ambientLight,keyLight,//周围光(底光),点光源(主光)
+            axis;//辅助坐标轴
+
+        start();
+
+        function start(){
+            initScene();
+            initCamera();
+            initRenderer();
+            initControls();
+            initLight();
+            addAxis();
+            main();
+            animation();
+        }
+        function initScene(){
+            scene = new THREE.Scene();
+        }
+        function initCamera(){
+            camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100000);
+            camera.position.set(30,30,55);
+            camera.lookAt(0,0,0);
+        }
+        function initRenderer(){
+            renderer = new THREE.WebGLRenderer({
+                antialias:true
+            });
+            renderer.setClearColor(0x0e1e38);
+            renderer.setSize(width, height);
+            document.querySelector(".show").appendChild(renderer.domElement);
+        }
+        function initControls(){
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.addEventListener('change', ()=>{renderer.render(scene, camera);});
+        }
+        function initLight(){
+            ambientLight = new THREE.AmbientLight(0xffffff,0.5);
+            scene.add(ambientLight);
+            keyLight = new THREE.SpotLight(0xffffff);
+            keyLight.position.set(100, 100, 200);
+            keyLight.target.position.set(0, 0, 0);
+            scene.add(keyLight);
+        }
+        function addAxis(){
+            axis = new THREE.AxesHelper(10000);
+            scene.add(axis);
+        }
+        function main() {
+            let geometry = new THREE.SphereGeometry(10,100,100);
+            let shader = new THREE.ShaderMaterial({
+                uniforms: {
+                    color:{
+                        value:new THREE.Vector3(0xff0000),
+                    }
+                },
+                //模型坐标系 -> 世界坐标系 -> 视图坐标系 -> 投影坐标系 -> 视口坐标系
+                //顶点着色器
+                vertexShader:`
+                    varying vec3 vNormal;
+                    varying vec3 vVertexWorldPosition;
+                    void main(){
+                        vNormal = normalize(normalMatrix * normal);//法向量从世界坐标转换到视图坐标并归一化通过varying从定点着色器传入片元着色器
+                        vVertexWorldPosition = (modelMatrix * vec4(position,1.0)).xyz;//将定点模型坐标系坐标转换成世界坐标系
+                        gl_Position	= projectionMatrix * modelViewMatrix * vec4(position, 1.0);//模型坐标系坐标position通过矩阵转换为视口坐标系坐标
+                    }
+                `,
+                //片元着色器
+                fragmentShader:`
+                    uniform vec3 color;
+                    varying vec3 vNormal;
+                    varying vec3 vVertexWorldPosition;
+                    void main(){
+                        vec3 worldVertexToCamera = cameraPosition - vVertexWorldPosition;//获取顶点到相机的矢量的世界坐标
+                        vec3 viewVertexToCamera = (viewMatrix * vec4(worldVertexToCamera,0.0)).xyz;//世界坐标转换为视图坐标系坐标
+                        viewVertexToCamera = normalize(viewVertexToCamera);//向量归一化
+                        float intensity = dot(vNormal,viewVertexToCamera);//点乘2个长度为1的矢量 计算夹角的cos值   a·b = |a||b|cosθ
+                        if(intensity>0.6){intensity = 0.0;}//中间夹角小的部分透明留空
+                        gl_FragColor = vec4(color, intensity);//赋值颜色
+                    }
+                `,
+                transparent:true
+            });
+            let sphere = new THREE.Mesh(geometry,shader);
+            scene.add(sphere)
+        }
+
+        function animation() {
+            requestAnimationFrame(animation);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
