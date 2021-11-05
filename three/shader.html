@@ -1,72 +1,131 @@
 <style>
-    *{
+    * {
         margin: 0;
         padding: 0;
     }
 </style>
+
 <body>
     <div id="container"></div>
     <script>
         let a = 1;
     </script>
     <script src="./lib/three.js"></script>
+    <script>
+        function getUrlParma(url) {
+            url = url ? url : window.location.href;
+            let params = window.location.href.split('?')[1];
+            if (!params) {
+                return {};
+            }
+            let parmasArray = params.split("&");
+            let parmasTemp = {};
+            for (let item of parmasArray) {
+                let temp = item.split("=");
+                if (temp && temp.length && temp.length === 2) {
+                    let RegExpPatten = new RegExp('\#\/$');
+                    if (RegExpPatten.test(temp[1])) {
+                        temp[1] = temp[1].replace(RegExpPatten, '');
+                    }
+                    parmasTemp[temp[0]] = temp[1];
+                }
+            }
+            // console.log("getUrlParma --->",parmasTemp);
+            return parmasTemp
+        }
+    </script>
     <script type="module">
-        import {vertexShader,fragmentShader} from "./shader/9.迷宫.js"
-        var container;
-        var camera, scene, renderer, clock;
-        var uniforms;
+        let shaderCode = {
+            vertexShader: "",
+            fragmentShader: ""
+        }
+        let container;
+        let camera, scene, renderer, clock;
+        let uniforms;
 
-        init();
-        animate();
+        const routes = getUrlParma();
+        let shaderPath = `./shader/${routes.shader}.js`;
+        let shaderPromise = () => import(shaderPath)
+        shaderPromise().then(({ vertexShader, fragmentShader }) => {
+            shaderCode.vertexShader = vertexShader;
+            shaderCode.fragmentShader = fragmentShader;
+            init();
+            animate();
+            console.log("scene",scene);
+        })
 
         function init() {
-            container = document.getElementById( 'container' );
+            container = document.getElementById('container');
 
             camera = new THREE.Camera();
             camera.position.z = 1;
+            // camera.position.copy(new THREE.Vector3(0, 3, 10));
 
             scene = new THREE.Scene();
             clock = new THREE.Clock();
 
-            var geometry = new THREE.PlaneBufferGeometry( 2, 2 );
+            var geometry = new THREE.PlaneBufferGeometry(2, 2);
 
             uniforms = {
                 u_start_time: { type: "f", value: Math.random() },
                 u_time: { type: "f", value: 1.0 },
-                u_resolution: { type: "v2", value: new THREE.Vector2() }
+                u_resolution: { type: "v2", value: new THREE.Vector2() },
+                uVelocity: {
+                    value: 3
+                },
+                uColor1: {
+                    value: new THREE.Color("#ff801a")
+                },
+                uColor2: {
+                    value: new THREE.Color("#ff5718")
+                }
             };
-            var material = new THREE.ShaderMaterial( {
+            var material = new THREE.ShaderMaterial({
                 uniforms: uniforms,
-                vertexShader,
-                fragmentShader
-            } );
+                vertexShader: shaderCode.vertexShader,
+                fragmentShader: shaderCode.fragmentShader
+            });
 
-            var mesh = new THREE.Mesh( geometry, material );
-            scene.add( mesh );
+            var mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            // 添加光源
+            createLight()
 
             renderer = new THREE.WebGLRenderer();
-            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setPixelRatio(window.devicePixelRatio);
 
-            container.appendChild( renderer.domElement );
+            container.appendChild(renderer.domElement);
 
             onWindowResize();
-            window.addEventListener( 'resize', onWindowResize, false );
+            window.addEventListener('resize', onWindowResize, false);
         }
 
-        function onWindowResize( event ) {
-            renderer.setSize( window.innerWidth, window.innerHeight );
+        function createLight() {
+            const dirLight = new THREE.DirectionalLight(
+                new THREE.Color("#ffffff"),
+                0.5
+            );
+            dirLight.position.set(0, 50, 0);
+            scene.add(dirLight);
+            const ambiLight = new THREE.AmbientLight(new THREE.Color("#ffffff"), 0.4);
+            scene.add(ambiLight);
+        }
+
+        function onWindowResize(event) {
+            renderer.setSize(window.innerWidth, window.innerHeight);
             uniforms.u_resolution.value.x = renderer.domElement.width;
             uniforms.u_resolution.value.y = renderer.domElement.height;
         }
 
         function animate() {
-            requestAnimationFrame( animate );
+            requestAnimationFrame(animate);
             render();
         }
 
         function render() {
             uniforms.u_time.value += clock.getDelta();
-            renderer.render( scene, camera );
+            renderer.render(scene, camera);
         }
     </script>
 </body>
