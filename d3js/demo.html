@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./lib/d3.v5.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        text {
+            font-size: 15px;
+        }
+    </style>
+    <title>demo</title>
+</head>
+
+<body>
+    <script>
+
+        const width = window.innerWidth;
+        const height = 500;
+        const margin = 0.1*width;
+        const durationTime = 500;
+        const updateDateStep = 1;
+        const updateDateTime = 200;
+        let data = [
+            { id: 0, val: 20, label: "小A" },
+            { id: 1, val: 20, label: "小B" },
+            { id: 2, val: 20, label: "小C" },
+            { id: 3, val: 20, label: "小D" },
+            { id: 4, val: 20, label: "小E" },
+        ]
+        let colorScale = d3.schemeCategory10;
+        let valueScale = d3.scaleLinear().
+            domain([0, 100])
+            .range([0, width - 2 * margin])
+
+        let svg = createSvg();
+        createLine();
+        render()
+        createAnimation()
+
+
+
+        function createSvg() {
+            return d3.select("body")
+                .append("svg")
+                .classed("self", true)
+                .attr("width", width)
+                .attr("height", height)
+        }
+        function createLine() {
+            svg.append("line")
+                .attr("x1", margin)
+                .attr("y1", margin)
+                .attr("x2", margin)
+                .attr("y2", height - margin)
+                .attr("stroke", "#000000")
+        }
+        function render() {
+            // console.log("render", data);
+            let items = svg.selectAll("g.item").data(data, d => d.id);
+
+            let newItems = items.enter()
+                .append("g")
+                .classed("item", true)
+                .attr("transform", (d, i) => `translate(${margin},${margin + i * 50})`)
+
+            newItems.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", d => valueScale(d.val))
+                .attr("height", 30)
+                .attr("fill", (d, i) => colorScale[d.id % 10])
+            newItems.append("text")
+                .classed("val", true)
+                .attr("fill", "#ffffff")
+                .attr("y", 20)
+                .attr("x", d => valueScale(d.val) - 30)
+                .text(d => d.val)
+            newItems.append("text")
+                .classed("label", true)
+                .attr("fill", "#000000")
+                .attr("y", 20)
+                .attr("x", d => valueScale(d.val) + 5)
+                .text(d => d.label)
+
+            let oldItems = items.exit()
+                .attr("opacity",1)
+                .transition()
+                .duration(50)
+                .attr("transform", (d, i) => `translate(${margin},${0})`)
+                .attr("opacity",0)
+                .remove();
+
+            let updateItems = items.transition()
+                .attr("transform", (d, i) => `translate(${margin},${margin + i * 50})`)
+            items.select("rect")
+                .transition()
+                .duration(updateDateTime)
+                .attr("width", d => valueScale(d.val))
+            items.select("text.val")
+                .transition()
+                .duration(updateDateTime)
+                .attr("x", d => valueScale(d.val) - 30)
+                .text(d => d.val)
+            items.select("text.label")
+                .transition()
+                .duration(updateDateTime)
+                .attr("x", d => valueScale(d.val) + 5)
+
+        }
+
+        let id = 5;
+        function createAnimation() {
+            let isAnimation = false;
+            setInterval(() => {
+                let max = Math.max(...data.map(d => d.val), 100);
+                valueScale.domain([0, max])
+                data.forEach(item => {
+                    // item.val += Math.ceil(Math.random() * updateDateStep)
+                    if(item.id % 5 === 0){
+                        item.val += Math.random() > 0.2 ? 1 : 0;
+                    } else {
+                        item.val += Math.random() > 0.5 ? 1 : 0;
+                    }
+                    if(item.val > 150){
+                        item.filter = true
+                    }
+                })
+                data = data.filter(item=>!item.filter);
+                if(data.length < 5){
+                    data.push({
+                        val:20,
+                        id:id++,
+                        label:"小"+String.fromCharCode("A".charCodeAt()+Math.floor(Math.random()*26))
+                    })
+                }
+                if (!isAnimation) {
+                    let orgin = JSON.stringify(data);
+                    data.sort((a, b) => (b.val - a.val));
+                    if (orgin !== JSON.stringify(data)) {
+                        isAnimation = true
+                        setTimeout(() => {
+                            isAnimation = false
+                        }, durationTime)
+                    }
+                }
+                render()
+            }, updateDateTime)
+        }
+
+    </script>
+</body>
+
+</html>
