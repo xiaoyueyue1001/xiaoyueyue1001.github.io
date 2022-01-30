@@ -24,7 +24,7 @@
 
         const width = window.innerWidth;
         const height = 500;
-        const margin = Math.max(0.1*width,50);
+        const margin = Math.min(0.1*width,50);
         const durationTime = 500;
         const updateDateStep = 1;
         const updateDateTime = 200;
@@ -135,9 +135,10 @@
                 if(data.length < 5){
                     data.push({
                         val:20,
-                        id:id++,
-                        label:"小"+String.fromCharCode("A".charCodeAt()+Math.floor(Math.random()*26))
+                        id:id,
+                        label:"小"+String.fromCharCode("A".charCodeAt()+id%26)
                     })
+                    id++
                 }
                 if (!isAnimation) {
                     let orgin = JSON.stringify(data);
