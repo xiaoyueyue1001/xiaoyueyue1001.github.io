@@ -16,7 +16,7 @@
             font-size: 15px;
         }
     </style>
-    <title>demo</title>
+    <title>数据可视化</title>
 </head>
 
 <body>
@@ -24,7 +24,7 @@
 
         const width = window.innerWidth;
         const height = 500;
-        const margin = 0.1*width;
+        const margin = Math.max(0.1*width,50);
         const durationTime = 500;
         const updateDateStep = 1;
         const updateDateTime = 200;
@@ -120,8 +120,6 @@
         function createAnimation() {
             let isAnimation = false;
             setInterval(() => {
-                let max = Math.max(...data.map(d => d.val), 100);
-                valueScale.domain([0, max])
                 data.forEach(item => {
                     // item.val += Math.ceil(Math.random() * updateDateStep)
                     if(item.id % 5 === 0){
@@ -151,6 +149,9 @@
                         }, durationTime)
                     }
                 }
+                
+                let max = Math.max(...data.map(d => d.val), 100);
+                valueScale.domain([0, max])
                 render()
             }, updateDateTime)
         }
