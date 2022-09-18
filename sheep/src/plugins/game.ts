@@ -121,16 +121,17 @@ export default class {
     updateCacheList() {
         let map = new Map();
         this.cacheList.forEach(item => {
-            if (map.get(item.type)) {
-                map.set(item.type, map.get(item.type) + 1);
+            if (map.get(item.type.id)) {
+                map.set(item.type.id, map.get(item.type.id) + 1);
             } else {
-                map.set(item.type, 1);
+                map.set(item.type.id, 1);
             }
         });
-
+        console.log("updateCacheList", map)
         for (let item of map) {
             if (item[1] >= 3) {
-                let id = item[0].id;
+                let id = item[0];
+                console.log("updateCacheList", id)
                 this.cacheList = this.cacheList.filter(iitem => iitem.type.id !== id);
             }
         }

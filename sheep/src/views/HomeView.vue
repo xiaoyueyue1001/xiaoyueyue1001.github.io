@@ -20,15 +20,15 @@
         ></div>
       </div>
       <div class="list">
-        <Transition v-for="item in data.cacheList" :key="item.id">
-          <div
-            v-if="true"
-            class="item"
-            :style="{
-        backgroundImage:`url('${item.type.imgSrc}')`
+        <div
+          class="item"
+          v-for="(item,index) in data.cacheList"
+          :key="item.id"
+          :style="{
+        backgroundImage:`url('${item.type.imgSrc}')`,
+        left:`${index}rem`
       }"
-          ></div>
-        </Transition>
+        ></div>
       </div>
     </div>
   </div>
@@ -159,7 +159,11 @@ let bg = bglist[Math.floor(Math.random() * 5)];
       height: 1rem;
       display: flex;
       background-color: #21304b;
+      position: relative;
       > .item {
+        position: absolute;
+        top: 0;
+        transition: all 0.5s;
         width: 1rem;
         height: 1rem;
         background-size: 100% 100%;
