@@ -42,6 +42,13 @@ export default class {
         this.cardSize = 2;
         this.gameMap = new GameMap(width, height);
         this.cardTypeList = [
+            { id: "01", name: "", imgSrc: require("@/assets/01.png") },
+            { id: "02", name: "", imgSrc: require("@/assets/02.png") },
+            { id: "03", name: "", imgSrc: require("@/assets/03.png") },
+            { id: "04", name: "", imgSrc: require("@/assets/04.png") },
+            { id: "05", name: "", imgSrc: require("@/assets/05.png") },
+            { id: "06", name: "", imgSrc: require("@/assets/06.png") },
+            { id: "07", name: "", imgSrc: require("@/assets/07.png") },
             { id: "9", name: "芭芭拉", imgSrc: require("@/assets/9.png") },
             { id: "13", name: "刻晴", imgSrc: require("@/assets/13.png") },
             { id: "8", name: "菲谢尔", imgSrc: require("@/assets/8.png") },
@@ -59,8 +66,8 @@ export default class {
             { id: "15", name: "胡桃", imgSrc: require("@/assets/16.png") },
             { id: "1", name: "钟离", imgSrc: require("@/assets/1.png") },
         ];
-        this.cardNumber = 24;
-        this.cardTypeNumber = 6;
+        this.cardNumber = 28;
+        this.cardTypeNumber = 7;
         this.list = [];
         this.cacheList = [];
         this.initList();

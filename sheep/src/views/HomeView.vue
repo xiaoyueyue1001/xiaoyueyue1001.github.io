@@ -148,7 +148,7 @@ let bg = bglist[Math.floor(Math.random() * 5)];
             right: 0;
             top: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(255, 255, 255, 0.4);
           }
         }
       }
