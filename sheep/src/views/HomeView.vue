@@ -1,5 +1,5 @@
 <template>
-  <div class="game" :key="data.key">
+  <div class="game">
     <div class="bg" :style="{backgroundImage:`url('${bg}')`}"></div>
     <div class="wrap">
       <div class="canvas">
@@ -19,27 +19,25 @@
           @click="clickHandle(item)"
         ></div>
       </div>
-      <Transition>
-        <div class="list" v-if="data.cacheList.length">
+      <div class="list">
+        <Transition v-for="item in data.cacheList" :key="item.id">
           <div
+            v-if="true"
             class="item"
-            v-for="item in data.cacheList"
-            :key="item.id"
             :style="{
         backgroundImage:`url('${item.type.imgSrc}')`
       }"
           ></div>
-        </div>
-      </Transition>
+        </Transition>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, nextTick } from "vue";
+import { reactive, ref, getCurrentInstance } from "vue";
 import Game, { cardType } from "@/plugins/game";
 type dataType = {
-  key: Symbol;
   list: cardType[];
   cacheList: cardType[];
   cardSize: number;
@@ -48,15 +46,13 @@ type dataType = {
 let game = new Game(8, 12);
 let len = ref(6 / game.gameMap.width);
 let data: dataType = reactive({
-  key: Symbol(),
-  list: game.list,
+  list: JSON.parse(JSON.stringify(game.list)),
   cacheList: game.cacheList,
   cardSize: game.cardSize
 });
 const render = () => {
-  data.list = game.list;
-  data.cacheList = game.cacheList;
-  // data.key = Symbol();
+  data.list = JSON.parse(JSON.stringify(game.list));
+  data.cacheList = JSON.parse(JSON.stringify(game.cacheList));
   setTimeout(() => {
     if (data.list.length === 0) {
       if (confirm("你赢了...")) {
@@ -68,7 +64,7 @@ const render = () => {
         window.location.reload();
       }
     }
-  }, 0);
+  }, 20);
 };
 const renderCacheList = () => {
   let map = new Map();
@@ -92,7 +88,6 @@ const clickHandle = (item: cardType) => {
   if (item.isTop) {
     game.removeItem(item);
     render();
-    console.log(data);
   }
 };
 
